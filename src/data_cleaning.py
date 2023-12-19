@@ -79,6 +79,20 @@ class DataCleaning():
         users_df.set_index("index", inplace=True)
         return users_df
 
+    def clean_card_data(self, cards_df):
+        cards_df = self.replace_null_with_nan(cards_df)
+        cards_df["card_number"] = cards_df["card_number"].apply(
+            self.clean_card_number
+        )
+        cards_df = self.drop_rows_where_card_number_is_nan(cards_df)
+        fixed_dates = cards_df["date_payment_confirmed"].apply(
+            self.fix_date_format
+        )
+        cards_df["date_payment_confirmed"] = fixed_dates
+        cards_df["index"] = self.generate_index_list(cards_df)
+        cards_df.set_index("index", inplace=True)
+        return cards_df
+
     def replace_null_with_nan(self, df):
         return df.replace("NULL", np.nan)
 
@@ -97,16 +111,18 @@ class DataCleaning():
         else:
             return value
 
-    def fix_date_format(self, date):
+    def fix_date_format(self, date: str):
         try:
-            date = parse(date, dayfirst=True)
-            return dt.strftime(date, '%Y-%m-%d')
+            string_date = str(date)
+            string_date = parse(string_date, dayfirst=True)
+            string_date = dt.strftime(string_date, "%Y-%m-%d")
+            return string_date
         except ParserError:
-            return date
+            return np.nan
         except ValueError:
-            return date
+            return np.nan
         except TypeError:
-            return date
+            return np.nan
 
     def validate_email_address(self, email):
         pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
@@ -160,3 +176,16 @@ class DataCleaning():
                 df[column_name] = df[column_name].astype(type, errors="raise")
         except ValueError:
             raise ValueError(f"{column_name} column type cannot be updated!")
+
+    def clean_card_number(self, card_number):
+        card_number_string = str(card_number)
+        if card_number_string.isdigit():
+            return card_number
+        elif "?" in card_number_string:
+            return card_number_string.replace("?", "")
+        else:
+            return np.nan
+
+    def drop_rows_where_card_number_is_nan(self, cards_df):
+        mask = cards_df['card_number'].isna()
+        return cards_df[~mask]

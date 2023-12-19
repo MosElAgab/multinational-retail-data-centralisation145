@@ -7,15 +7,27 @@ connection = DatabaseConnector()
 extractor = DataExtractor()
 cleaning_util = DataCleaning()
 
+
+## users data
 # extract users data
 engine = connection.init_db_engine()
 table_name = "legacy_users"
 users_df = extractor.read_rds_table(table_name, engine)
-
 # clean users data
-cleaned_users_df = cleaning_util.clean_user_data(users_df)
-
+clean_users_df = cleaning_util.clean_user_data(users_df)
 # upload users data
 table_name = "dim_users"
 upload_engine = connection.init_upload_db_engine()
-connection.upload_to_db(cleaned_users_df, table_name, upload_engine)
+connection.upload_to_db(clean_users_df, table_name, upload_engine)
+
+
+# cards data
+# extract card data
+url = extractor.pdf_url
+cards_df = extractor.retrieve_pdf_data(url)
+# clean card data
+clean_card_df = cleaning_util.clean_card_data(cards_df)
+# upload card data
+table_name = "dim_card_details"
+upload_engine = connection.init_upload_db_engine()
+connection.upload_to_db(clean_card_df, table_name, upload_engine)

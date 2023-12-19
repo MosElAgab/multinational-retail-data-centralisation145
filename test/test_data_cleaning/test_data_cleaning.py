@@ -50,7 +50,7 @@ def test_replace_invalid_name():
 
 
 # test fix date format
-def test_fix_date_format():
+def test_fix_date_format_reshapes_valid_dates():
     sample = '16 Oct 2020'
     expected = '2020-10-16'
     result = cleaning_util.fix_date_format(sample)
@@ -63,6 +63,20 @@ def test_fix_date_format():
     expected = '2014-12-11'
     result = cleaning_util.fix_date_format(sample)
     assert result == expected
+
+
+def test_fix_date_format_retruns_nan_for_invalid_detes():
+    sample = 'ABCDER'
+    expected = np.nan
+    result = cleaning_util.fix_date_format(sample)
+    assert result is expected
+
+
+def test_fix_date_format_ignores_nans():
+    sample = np.nan
+    expected = np.nan
+    result = cleaning_util.fix_date_format(sample)
+    assert result is expected
 
 
 # test clean users data sets the correct data type for each column
@@ -208,3 +222,46 @@ def test_set_column_type():
     with pytest.raises(ValueError, match=match):
         cleaning_util.set_column_type(df, "first_name", "int64")
         print(df)
+
+
+def test_clean_card_number_skips_valid_values():
+    sample = "4252720361802860591"
+    expected = "4252720361802860591"
+    result = cleaning_util.clean_card_number(sample)
+    assert result == expected
+
+
+def test_clean_card_number_removes_question_mark():
+    sample = "?4252720361802860591"
+    expected = "4252720361802860591"
+    result = cleaning_util.clean_card_number(sample)
+    assert result == expected
+    sample = "????344132437598598"
+    expected = "344132437598598"
+    result = cleaning_util.clean_card_number(sample)
+    assert result == expected
+
+
+def test_clean_card_number_ignores_nan():
+    sample = np.nan
+    expected = np.nan
+    result = cleaning_util.clean_card_number(sample)
+    assert result is expected
+
+
+def test_clean_card_number_removes_invalid_values():
+    sample = "ABCD34EF5YU"
+    expected = np.nan
+    result = cleaning_util.clean_card_number(sample)
+    assert result is expected
+
+
+def test_drop_rows_where_card_number_is_nan():
+    df = pd.DataFrame(
+        {
+            'card_number': [12, np.nan, np.nan, 14],
+            'column_2': [np.nan, 'ab', 'cd', 'ef']
+        }
+    )
+    df = cleaning_util.drop_rows_where_card_number_is_nan(df)
+    assert len(df) == 2

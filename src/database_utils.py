@@ -10,7 +10,7 @@ class DatabaseConnector():
         self.upload_creds_url = "./local_db_creds.yaml"
 
     # load database credentials method
-    def read_db_creds(self):
+    def __read_db_creds(self):
         with open(self.creds_url, "r") as f:
             creds = yaml.safe_load(f)
         return creds
@@ -19,7 +19,7 @@ class DatabaseConnector():
     def init_db_engine(self):
         DATABASE_TYPE = "postgresql"
         DBAPI = "psycopg2"
-        creds = self.read_db_creds()
+        creds = self.__read_db_creds()
         url_object = URL.create(
             f"{DATABASE_TYPE}+{DBAPI}",
             username=creds["RDS_USER"],
@@ -31,7 +31,7 @@ class DatabaseConnector():
         engine = create_engine(url_object)
         return engine
 
-    def read_upload_db_creds(self):
+    def __read_upload_db_creds(self):
         with open(self.upload_creds_url, "r") as f:
             creds = yaml.safe_load(f)
         return creds
@@ -39,7 +39,7 @@ class DatabaseConnector():
     def init_upload_db_engine(self):
         DATABASE_TYPE = "postgresql"
         DBAPI = "psycopg2"
-        creds = self.read_upload_db_creds()
+        creds = self.__read_upload_db_creds()
         url_object = URL.create(
             f"{DATABASE_TYPE}+{DBAPI}",
             username=creds["USER"],
