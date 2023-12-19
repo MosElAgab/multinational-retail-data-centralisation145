@@ -79,28 +79,6 @@ def test_fix_date_format_ignores_nans():
     assert result is expected
 
 
-# test clean users data sets the correct data type for each column
-def test_clean_users_data_sets_appropriate_column_data_type():
-    column_data_type_map = {
-        "first_name": "string",
-        "last_name": "string",
-        "date_of_birth": "datetime64[ns]",
-        "company": "string",
-        "email_address": "string",
-        "address": "string",
-        "country": "string",
-        "country_code": "string",
-        "phone_number": "string",
-        "join_date": "datetime64[ns]",
-        "user_uuid": "string"
-    }
-    cleaned_users_df = cleaning_util.clean_user_data(users_df)
-    for key, value in column_data_type_map.items():
-        result = cleaned_users_df[key].dtype
-        expected = value
-        assert result == expected
-
-
 # test validate email
 def test_validate_email():
     sample = "PYCLKLLC7I"
@@ -196,32 +174,6 @@ def test_generate_index():
     assert result[0] == 0
     # test end index
     assert result[-1] == 9
-
-
-# test set column type changes df column type
-def test_set_column_type():
-    data = {
-        "i": [1, 2, 3],
-        "first_name": ["Ahmed", "Ali", "Alex"],
-        "last_name": ["Ali", "Alex", "ahmed"],
-        "date_of_birth": ["2023-12-18", "2002-10-12", "12 Oct 1996"]
-    }
-    df = pd.DataFrame(data)
-    # test with type string
-    cleaning_util.set_column_type(df, "first_name", "string")
-    result = df['first_name'].dtype
-    expected = "string"
-    assert result == expected
-    # test with type datetime
-    cleaning_util.set_column_type(df, "date_of_birth", "datetime64")
-    result = df['date_of_birth'].dtype
-    expected = "datetime64[ns]"
-    assert result == expected
-    # test it raises value error if column type cannot be changed
-    match = "first_name column type cannot be updated!"
-    with pytest.raises(ValueError, match=match):
-        cleaning_util.set_column_type(df, "first_name", "int64")
-        print(df)
 
 
 def test_clean_card_number_skips_valid_values():

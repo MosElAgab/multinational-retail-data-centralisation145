@@ -13,49 +13,41 @@ class DataCleaning():
     def clean_user_data(self, users_df):
         # replace nulls by nans
         users_df = self.replace_null_with_nan(users_df)
-        # first name
+        # clean first name
         users_df["first_name"] = users_df["first_name"].apply(
              self.replace_invalid_values_with_nan
              )
-        self.set_column_type(users_df, "first_name", "string")
-        # last name
+        # clean last name
         users_df["last_name"] = users_df["last_name"].apply(
              self.replace_invalid_values_with_nan
              )
-        self.set_column_type(users_df, "last_name", "string")
-        # date_of_birth
+        # clean date_of_birth
         users_df["date_of_birth"] = users_df["date_of_birth"].apply(
              self.fix_date_format
              )
-        self.set_column_type(users_df, "date_of_birth", "datetime64")
-        # company
+        # clean compan
         users_df["company"] = users_df["company"].apply(
              self.replace_invalid_values_with_nan
              )
-        self.set_column_type(users_df, "company", "string")
-        # email address
+        # clean email address
         cleaned_emails = users_df['email_address'].str.replace("@@", '@')
         users_df['email_address'] = cleaned_emails
         users_df["email_address"] = users_df["email_address"].apply(
              self.replace_invalid_email_with_nan
              )
-        self.set_column_type(users_df, "email_address", "string")
-        # address
+        # clean address 
         users_df["address"] = users_df["address"].apply(
              self.replace_invalid_values_with_nan
              )
-        self.set_column_type(users_df, "address", "string")
-        # country
+        # clean country
         users_df["country"] = users_df["country"].apply(
              self.replace_invalid_values_with_nan
              )
-        self.set_column_type(users_df, "country", "string")
-        # country_code
+        # clean country_code 
         users_df["country_code"] = users_df["country"].apply(
              self.assign_valid_country_code
              )
-        self.set_column_type(users_df, "country_code", "string")
-        # phone_number
+        # clean phone_number
         users_df["phone_number"] = users_df["phone_number"].apply(
              self.replace_invalid_phone_numbers_with_nan
              )
@@ -63,19 +55,14 @@ class DataCleaning():
             'x',
             ''
             )
-        self.set_column_type(users_df, "phone_number", "string")
-        # join_date
+        # clean join_date
         users_df["join_date"] = users_df["join_date"].apply(
              self.fix_date_format
              )
-        self.set_column_type(users_df, "join_date", "datetime64")
-        # user_uuid
-        self.set_column_type(users_df, "user_uuid", "string")
         # Drop rows with less than 5 non-null values
         users_df.dropna(thresh=5, inplace=True)
         # update index
         users_df['index'] = self.generate_index_list(users_df)
-        self.set_column_type(users_df, "index", "int64")
         users_df.set_index("index", inplace=True)
         return users_df
 
@@ -161,21 +148,6 @@ class DataCleaning():
     def generate_index_list(self, df):
         index = [i for i in range(len(df))]
         return index
-
-    def set_column_type(self, df, column_name, type):
-        def to_date():
-            df[column_name] = pd.to_datetime(
-                df[column_name],
-                format="%Y-%m-%d",
-                errors='coerce'
-            )
-        try:
-            if type == "datetime64":
-                to_date()
-            else:
-                df[column_name] = df[column_name].astype(type, errors="raise")
-        except ValueError:
-            raise ValueError(f"{column_name} column type cannot be updated!")
 
     def clean_card_number(self, card_number):
         card_number_string = str(card_number)
