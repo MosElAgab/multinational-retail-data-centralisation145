@@ -1,6 +1,7 @@
 from dateutil.parser import parse, ParserError
 import pandas as pd, numpy as np
 from datetime import datetime as dt
+from requests import get
 # import numpy as np
 from sqlalchemy import create_engine, engine
 from src.database_utils import DatabaseConnector
@@ -14,41 +15,20 @@ import os
 # tabula.environment_info()
 
 # extract
-file_path = "https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf"
-# # # file_path = './card_details.pdf'
-data_extractor = DataExtractor()
-url = data_extractor.pdf_url
-df = data_extractor.retrieve_pdf_data(url)
 
-
-# clean
-cleaning_util = DataCleaning()
-clean_df = cleaning_util.clean_card_data(df)
-def is_valid(date):
-    try:
-        string_date = str(date)
-        dt.strptime(string_date, "%Y-%m-%d")
-        # string_date = parse(string_date, dayfirst=True
-        return True
-    except ParserError:
-        print('parser error', date)
-        return False
-    except TypeError:
-        print("type error", date)
-        return False
-    except ValueError:
-        print("value error", date)
-        return False
-mask = clean_df["date_payment_confirmed"].apply(is_valid)
-print(clean_df[mask])
-
-clean_df.info()
+headers = {
+    "x-api-key": "yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX"
+}
+url = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/1"
+res = get(url, headers=headers)
+data = res.json()
+print(data)
 
 
 
-
-
-
+# extractor = DataExtractor()
+# x = extractor.list_number_of_stores()
+# print(x)
 # summary
 # duplicate gives NULL
 # card numbers contain ?

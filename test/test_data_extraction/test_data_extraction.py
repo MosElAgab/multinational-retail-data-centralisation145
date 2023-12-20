@@ -30,3 +30,14 @@ def test_retrieve_pdf_data_retrieve_all_records():
     url = data_extractor.pdf_url
     result = data_extractor.retrieve_pdf_data(url)
     assert len(result) == 15309
+
+def test_list_number_of_stores_retruns_integer():
+    data_extractor = DataExtractor()
+    result = data_extractor.list_number_of_stores()
+    assert isinstance(result, int)
+
+
+def test_list_number_of_stores_retruns_correct_number_stores():
+    data_extractor = DataExtractor()
+    result = data_extractor.list_number_of_stores()
+    assert result == 451

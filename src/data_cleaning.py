@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 import re
 from dateutil.parser import parse, ParserError
@@ -15,35 +14,24 @@ class DataCleaning():
         users_df = self.replace_null_with_nan(users_df)
         # clean first name
         users_df["first_name"] = users_df["first_name"].apply(
-             self.replace_invalid_values_with_nan
+             self.replace_invalid_name_with_nan
              )
         # clean last name
         users_df["last_name"] = users_df["last_name"].apply(
-             self.replace_invalid_values_with_nan
+             self.replace_invalid_name_with_nan
              )
+        # drop rows where first/last_name is nan
+        users_df = self.drop_rows_where_name_is_nan(users_df)
         # clean date_of_birth
         users_df["date_of_birth"] = users_df["date_of_birth"].apply(
              self.fix_date_format
              )
-        # clean compan
-        users_df["company"] = users_df["company"].apply(
-             self.replace_invalid_values_with_nan
-             )
         # clean email address
         cleaned_emails = users_df['email_address'].str.replace("@@", '@')
-        users_df['email_address'] = cleaned_emails
-        users_df["email_address"] = users_df["email_address"].apply(
+        users_df["email_address"] = cleaned_emails.apply(
              self.replace_invalid_email_with_nan
              )
-        # clean address 
-        users_df["address"] = users_df["address"].apply(
-             self.replace_invalid_values_with_nan
-             )
-        # clean country
-        users_df["country"] = users_df["country"].apply(
-             self.replace_invalid_values_with_nan
-             )
-        # clean country_code 
+        # clean country_code
         users_df["country_code"] = users_df["country"].apply(
              self.assign_valid_country_code
              )
@@ -83,7 +71,7 @@ class DataCleaning():
     def replace_null_with_nan(self, df):
         return df.replace("NULL", np.nan)
 
-    def replace_invalid_values_with_nan(self, value):
+    def replace_invalid_name_with_nan(self, value):
         if value is np.nan:
             return value
         # value conditions
@@ -97,6 +85,14 @@ class DataCleaning():
             return np.nan
         else:
             return value
+    
+    def drop_rows_where_name_is_nan(self, df):
+        mask_1 = df["first_name"].isna()
+        mask_2 = df["last_name"].isna()
+        mask = (mask_1 & mask_2)
+        df = df[~mask]
+        return df
+
 
     def fix_date_format(self, date: str):
         try:

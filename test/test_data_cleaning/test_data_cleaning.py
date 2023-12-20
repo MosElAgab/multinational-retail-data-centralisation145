@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import pytest
 from src.database_utils import DatabaseConnector
 from src.data_extraction import DataExtractor
 from src.data_cleaning import DataCleaning
@@ -22,8 +21,8 @@ def test_replace_null_with_nan():
         "last_name": ["Ali", "NULL", "ahmed"],
         "date_of_birth": ["NULL", "2002-10-12", "2003-02-12"]
     }
-    data_df = pd.DataFrame(data)
-    result_df = cleaning_util.replace_null_with_nan(data_df)
+    df = pd.DataFrame(data)
+    result_df = cleaning_util.replace_null_with_nan(df)
     result = result_df.iloc[0, 3]
     expected = np.nan
     assert result is expected
@@ -36,17 +35,29 @@ def test_replace_null_with_nan():
 # test replace invalid values with nan
 def test_replace_invalid_name():
     sample = "WSRSCUDTR"
-    result = cleaning_util.replace_invalid_values_with_nan(sample)
+    result = cleaning_util.replace_invalid_name_with_nan(sample)
     expected = np.nan
     assert result is expected
     sample = "PYCLKLLC7I"
-    result = cleaning_util.replace_invalid_values_with_nan(sample)
+    result = cleaning_util.replace_invalid_name_with_nan(sample)
     expected = np.nan
     assert result is expected
     sample = "Alex"
-    result = cleaning_util.replace_invalid_values_with_nan(sample)
+    result = cleaning_util.replace_invalid_name_with_nan(sample)
     expected = "Alex"
     assert result == expected
+
+# 
+def test_drop_rows_where_name_is_nan():
+    data = {
+        "i": [1, 2, 3, 4],
+        "first_name": [np.nan, "Ali", "Alex", np.nan],
+        "last_name": [np.nan, np.nan, "Ahmed", np.nan],
+        "year": ["2002", "2003", np.nan, "2008"]
+    }
+    df = pd.DataFrame(data)
+    result = cleaning_util.drop_rows_where_name_is_nan(df)
+    assert len(result) == 2
 
 
 # test fix date format
