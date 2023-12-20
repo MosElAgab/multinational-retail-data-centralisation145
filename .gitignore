@@ -156,7 +156,7 @@ cython_debug/
 db_creds.yaml
 local_db_creds.yaml
 my_py.py
-card_details.pdf
+*.pdf
 stores_data.csv
 
 # PyCharm
