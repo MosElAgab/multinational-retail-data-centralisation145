@@ -155,8 +155,9 @@ cython_debug/
 # db credentials
 db_creds.yaml
 local_db_creds.yaml
-my_test.py
-card_details.pdf/
+my_py.py
+card_details.pdf
+stores_data.csv
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

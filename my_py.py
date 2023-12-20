@@ -15,23 +15,17 @@ import os
 # tabula.environment_info()
 
 # extract
-
-headers = {
-    "x-api-key": "yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX"
-}
-url = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/1"
-res = get(url, headers=headers)
-data = res.json()
-print(data)
-
-
-
 # extractor = DataExtractor()
-# x = extractor.list_number_of_stores()
-# print(x)
-# summary
-# duplicate gives NULL
-# card numbers contain ?
-# check expiry date adhere to format
-# remove code like entries
-# validate date format
+# url = extractor.NUMBER_OF_STORES_URL
+# headers = extractor.HEADERS
+# number_of_stores = extractor.list_number_of_stores(url, headers)
+# url = extractor.STORE_DATA_URL
+# stores_df = extractor.retrieve_store_data(url, headers, number_of_stores)
+# print(stores_df)
+
+# stores_df.to_csv("stores_data.csv")
+
+
+# extract
+stores_df = pd.read_csv("stores_data.csv")
+print(stores_df)
