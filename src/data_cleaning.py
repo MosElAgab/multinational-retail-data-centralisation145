@@ -63,10 +63,36 @@ class DataCleaning():
         fixed_dates = cards_df["date_payment_confirmed"].apply(
             self.fix_date_format
         )
-        cards_df["date_payment_confirmed"] = fixed_dates
+        cards_df.loc[:, "date_payment_confirmed"] = fixed_dates
         cards_df["index"] = self.generate_index_list(cards_df)
         cards_df.set_index("index", inplace=True)
         return cards_df
+
+    def clean_store_data(self, stores_df):
+        stores_df = self.replace_null_with_nan(stores_df)
+        clean_store_type = stores_df["store_type"].apply(
+            self.replace_invalid_store_type_with_nan
+        )
+        stores_df.loc[:, "store_type"] = clean_store_type
+        stores_df = self.drop_rows_where_store_type_is_nan(stores_df)
+        stores_df = stores_df.drop(columns="lat")
+        clean_staff_numbers = stores_df["staff_numbers"].apply(
+            self.remove_alpha_letters_from_staff_number
+        )
+        stores_df.loc[:, "staff_numbers"] = clean_staff_numbers
+        fixed_opening_dates = stores_df["opening_date"].apply(
+            self.fix_date_format
+        )
+        stores_df.loc[:, "opening_date"] = fixed_opening_dates
+        fixed_country_code = stores_df["country_code"].str.replace("GB", "UK")
+        stores_df.loc[:, "country_code"] = fixed_country_code
+        fixed_continent = stores_df["continent"].str.replace("eeEurope", "Europe")
+        stores_df.loc[:, "continent"] = fixed_continent
+        fixed_continent = stores_df["continent"].str.replace("eeAmerica", "America")
+        stores_df.loc[:, "continent"] = fixed_continent
+        stores_df["index"] = self.generate_index_list(stores_df)
+        stores_df.set_index("index", inplace=True)
+        return stores_df
 
     def replace_null_with_nan(self, df):
         return df.replace("NULL", np.nan)
@@ -85,7 +111,16 @@ class DataCleaning():
             return np.nan
         else:
             return value
-    
+
+    def replace_invalid_phone_numbers_with_nan(self, phone_number):
+        try:
+            if any(char.isalpha() and char.isupper() for char in phone_number):
+                return np.nan
+            else:
+                return phone_number
+        except TypeError:
+            return phone_number
+
     def drop_rows_where_name_is_nan(self, df):
         mask_1 = df["first_name"].isna()
         mask_2 = df["last_name"].isna()
@@ -132,15 +167,6 @@ class DataCleaning():
         except KeyError:
             return np.nan
 
-    def replace_invalid_phone_numbers_with_nan(self, phone_number):
-        try:
-            if any(char.isalpha() and char.isupper() for char in phone_number):
-                return np.nan
-            else:
-                return phone_number
-        except TypeError:
-            return phone_number
-
     def generate_index_list(self, df):
         index = [i for i in range(len(df))]
         return index
@@ -157,3 +183,29 @@ class DataCleaning():
     def drop_rows_where_card_number_is_nan(self, cards_df):
         mask = cards_df['card_number'].isna()
         return cards_df[~mask]
+    
+    def drop_rows_where_store_type_is_nan(self, stores_df):
+        mask = stores_df["store_type"].isna()
+        return stores_df[~mask]
+    
+    def replace_invalid_store_type_with_nan(self, store_type):
+        if store_type is np.nan:
+            return store_type
+        store_type_string = str(store_type)
+        contain_digit = any([char.isdigit() for char in store_type_string])
+        if contain_digit:
+            return np.nan
+        return store_type_string
+
+    def remove_alpha_letters_from_staff_number(self, staff_number):
+        if staff_number is np.nan:
+            return np.nan
+        staff_number_string = str(staff_number)
+        contain_letters = any([char for char in staff_number_string])
+        if contain_letters:
+            fixed_staff_numbers = staff_number_string
+            for char in staff_number_string:
+                if char.isalpha():
+                    fixed_staff_numbers = fixed_staff_numbers.replace(char, "")
+            return int(fixed_staff_numbers)
+        return staff_number

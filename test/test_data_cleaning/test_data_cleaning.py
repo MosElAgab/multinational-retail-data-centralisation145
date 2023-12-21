@@ -12,6 +12,16 @@ cleaning_util = DataCleaning()
 table_name = "legacy_users"
 users_df = extractor.read_rds_table(table_name, engine)
 
+# To download store data to local drive as csv file:
+# run
+# extractor = DataExtractor()
+# url = extractor.NUMBER_OF_STORES_URL
+# headers = extractor.HEADERS
+# number_of_stores = extractor.list_number_of_stores(url, headers)
+# url = extractor.STORE_DATA_URL
+# stores_df = extractor.retrieve_store_data(url, headers, number_of_stores)
+# stores_df.to_csv("stores_data.csv", index=False)
+
 
 # test it replace null value with nan method
 def test_replace_null_with_nan():
@@ -47,7 +57,7 @@ def test_replace_invalid_name():
     expected = "Alex"
     assert result == expected
 
-# 
+
 def test_drop_rows_where_name_is_nan():
     data = {
         "i": [1, 2, 3, 4],
@@ -228,3 +238,72 @@ def test_drop_rows_where_card_number_is_nan():
     )
     df = cleaning_util.drop_rows_where_card_number_is_nan(df)
     assert len(df) == 2
+
+
+def test_drop_rows_where_store_type_is_nan():
+    df = pd.DataFrame(
+        {
+            'store_type': [12, np.nan, np.nan, 14],
+            'column_2': [np.nan, 'ab', 'cd', 'ef']
+        }
+    )
+    df = cleaning_util.drop_rows_where_store_type_is_nan(df)
+    assert len(df) == 2
+
+
+def test_replace_invalid_stoe_type_with_nan_skips_nans():
+    sample = np.nan
+    expected = np.nan
+    result = cleaning_util.replace_invalid_store_type_with_nan(sample)
+    assert result is expected
+
+
+def test_replace_invalid_stoe_type_with_nan_skips_valid_values():
+    sample = "Super Store"
+    expected = "Super Store"
+    result = cleaning_util.replace_invalid_store_type_with_nan(sample)
+    assert result is expected
+    sample = "Local"
+    expected = "Local"
+    result = cleaning_util.replace_invalid_store_type_with_nan(sample)
+    assert result is expected
+    sample = "Web Portal"
+    expected = "Web Portal"
+    result = cleaning_util.replace_invalid_store_type_with_nan(sample)
+    assert result is expected
+
+
+def test_replace_inavalid_longitude_with_nan():
+    sample = "Q1TJY8H1ZH"
+    expected = np.nan
+    result = cleaning_util.replace_invalid_store_type_with_nan(sample)
+    assert result is expected
+
+
+def test_remove_alpha_letters_from_staff_number_skips_nans():
+    sample = np.nan
+    expected = np.nan
+    result = cleaning_util.remove_alpha_letters_from_staff_number(sample)
+    assert result is expected
+
+
+def test_remove_alpha_letters_from_staff_number_skips_valid_valus():
+    sample = 320
+    expected = 320
+    result = cleaning_util.remove_alpha_letters_from_staff_number(sample)
+    assert result == expected
+    sample = 46
+    expected = 46
+    result = cleaning_util.remove_alpha_letters_from_staff_number(sample)
+    assert result == expected
+
+
+def test_remove_alpha_letters_from_staff_number():
+    sample = "J78"
+    expected = 78
+    result = cleaning_util.remove_alpha_letters_from_staff_number(sample)
+    assert result is expected
+    sample = "80R"
+    expected = 80
+    result = cleaning_util.remove_alpha_letters_from_staff_number(sample)
+    assert result is expected
