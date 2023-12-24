@@ -20,6 +20,7 @@ class DataCleaning():
         invalid_name_mask = df["first_name"].apply(
             self.is_invalid_data_point
         )
+        # replace invalid data with nan
         df.mask(invalid_name_mask, inplace=True)
         # fix date format
         column = "date_of_birth"
@@ -55,6 +56,7 @@ class DataCleaning():
         )
         # mask invalid data by catching invalid card_number (nan)
         invalid_card_number_mask = df["card_number"].isna()
+        # replace invalid data with nan
         df.mask(invalid_card_number_mask, inplace=True)
         # fix date format
         column = "date_payment_confirmed"
@@ -77,6 +79,7 @@ class DataCleaning():
         invalid_store_type_mask = df[column].apply(
             self.is_invalid_data_point
         )
+        # replace invalid data with nan
         df.mask(invalid_store_type_mask, inplace=True)
         # drop lat column 
         df.drop(columns="lat", inplace=True)
@@ -108,6 +111,7 @@ class DataCleaning():
         )
         # mask invalid data by catching invalid weight
         invalid_weight_mask = df["weight"].isna()
+        # replace invalid data with nan
         df.mask(invalid_weight_mask, inplace=True)
        # drop rows where all values are nans
         df.dropna(how="all", inplace=True)
@@ -117,31 +121,31 @@ class DataCleaning():
 
     def clean_orders_data(self, orders_df: pd.DataFrame) -> pd.DataFrame:
         df = orders_df.copy()
-        columns = ["first_name", "last_name", "1", "level_0"]
+        # drop columns
+        columns = ["first_name", "last_name", "1", "level_0", "index"]
         df.drop(columns=columns, inplace=True)
-        df["index"] = self.generate_index_list(df)
-        df.set_index("index", inplace=True)
         return df
 
     def clean_date_events(self, date_events_df: pd.DataFrame) -> pd.DataFrame:
         df = date_events_df.copy()
+        # replace NULL with nan
         df = self.replace_null_with_nan(df)
         # mask invalid data by catching invalid time_period
         mask = df["time_period"].apply(
-            self.is_invalid_time_period
+            self.is_invalid_data_point
         )
         # replace invalid data with nan
         df.mask(mask, inplace=True)
         # drop rows where all columns are nan
         df.dropna(inplace=True, how="all")
-        df["index"] = self.generate_index_list(df)
-        df.set_index("index", inplace=True)
+        # reset index
+        df.reset_index(inplace=True, drop=True)
         return df
 
-    def replace_null_with_nan(self, df: pd.DataFrame) -> pd.DataFrame:
+    def replace_null_with_nan(self, df: DataFrame) -> DataFrame:
         return df.replace("NULL", np.nan)
 
-    def fix_date_format(self, date: str):
+    def fix_date_format(self, date: str) -> dt:
         try:
             string_date = str(date)
             string_date = parse(string_date, dayfirst=True)
@@ -154,7 +158,7 @@ class DataCleaning():
         except TypeError:
             return np.nan
 
-    def assign_valid_country_code(self, country):
+    def assign_valid_country_code(self, country: str) -> str:
         country_code_map = {
             "United Kingdom": "GB",
             "United States": "US",
@@ -165,11 +169,11 @@ class DataCleaning():
         except KeyError:
             return np.nan
 
-    def generate_index_list(self, df):
+    def generate_index_list(self, df: DataFrame) -> list:
         index = [i for i in range(len(df))]
         return index
 
-    def clean_card_number(self, card_number):
+    def clean_card_number(self, card_number: str) -> str:
         card_number_string = str(card_number)
         if card_number_string.isdigit():
             return card_number
@@ -178,11 +182,7 @@ class DataCleaning():
         else:
             return np.nan
 
-    def drop_rows_where_store_type_is_nan(self, stores_df):
-        mask = stores_df["store_type"].isna()
-        return stores_df[~mask]
-
-    def remove_alpha_letters_from_staff_number(self, staff_number):
+    def remove_alpha_letters_from_staff_number(self, staff_number: str) -> str:
         if staff_number is np.nan:
             return np.nan
         staff_number_string = str(staff_number)
@@ -202,7 +202,7 @@ class DataCleaning():
         df["weight"].mask(~mask, inplace=True)
         return df
 
-    def convert_to_kg(self, value):
+    def convert_to_kg(self, value:str) -> str:
         try:
             value_string = str(value)
             if value_string[-1] == ".":
@@ -232,17 +232,6 @@ class DataCleaning():
         except ValueError:
             print("product_data/convert_to_kg/value error", value)
             return value
-
-    def is_invalid_time_period(self, time_period) -> bool:
-        time_period_str = str(time_period)
-        is_single_word = len(time_period_str.split(" ")) == 1
-        contain_digit = any([char.isdigit() for char in time_period_str])
-        is_upper_case = time_period_str.isupper()
-        if is_single_word and contain_digit:
-            return True
-        elif is_single_word and is_upper_case:
-            return True
-        return False
 
     def is_invalid_data_point(self, value: str) -> bool:
         value_str = str(value)

@@ -148,17 +148,6 @@ def test_clean_card_number_removes_invalid_values():
     assert result is expected
 
 
-def test_drop_rows_where_store_type_is_nan():
-    df = pd.DataFrame(
-        {
-            'store_type': [12, np.nan, np.nan, 14],
-            'column_2': [np.nan, 'ab', 'cd', 'ef']
-        }
-    )
-    df = cleaning_util.drop_rows_where_store_type_is_nan(df)
-    assert len(df) == 2
-
-
 def test_remove_alpha_letters_from_staff_number_skips_nans():
     sample = np.nan
     expected = np.nan
@@ -346,41 +335,6 @@ def test_convert_to_kg_converts_misstyped_g_to_kg():
     result = cleaning_util.convert_to_kg(sample)
     expected = "0.412kg"
     assert result == expected
-
-
-def test_is_invalid_time_period_retruns_boolean():
-    sample = "evening"
-    result = cleaning_util.is_invalid_time_period(sample)
-    assert isinstance(result, bool)
-
-
-def test_is_invalid_time_period_retruns_false_for_nan():
-    sample = np.nan
-    expected = False
-    result = cleaning_util.is_invalid_time_period(sample)
-    assert result is expected
-
-
-def test_is_invalid_time_period_retruns_false_for_valid_values():
-    sample = "Evening"
-    expected = False
-    result = cleaning_util.is_invalid_time_period(sample)
-    assert result is expected
-    sample = "Late_Hours"
-    expected = False
-    result = cleaning_util.is_invalid_time_period(sample)
-    assert result is expected
-
-
-def test_is_invalid_time_period_retruns_true_for_invalid_values():
-    sample = "FIEOPTNBWZ"
-    expected = True
-    result = cleaning_util.is_invalid_time_period(sample)
-    assert result is expected
-    sample = "LUVV7GL3QQ"
-    expected = True
-    result = cleaning_util.is_invalid_time_period(sample)
-    assert result is expected
 
 
 def test_is_invalid_data_point_retruns_boolean():
