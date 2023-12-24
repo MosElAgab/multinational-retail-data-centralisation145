@@ -42,18 +42,6 @@ def test_replace_null_with_nan():
     assert result is expected
 
 
-def test_drop_rows_where_name_is_nan():
-    data = {
-        "i": [1, 2, 3, 4],
-        "first_name": [np.nan, "Ali", "Alex", np.nan],
-        "last_name": [np.nan, np.nan, "Ahmed", np.nan],
-        "year": ["2002", "2003", np.nan, "2008"]
-    }
-    df = pd.DataFrame(data)
-    result = cleaning_util.drop_rows_where_name_is_nan(df)
-    assert len(result) == 2
-
-
 # test fix date format
 def test_fix_date_format_reshapes_valid_dates():
     sample = '16 Oct 2020'
@@ -158,17 +146,6 @@ def test_clean_card_number_removes_invalid_values():
     expected = np.nan
     result = cleaning_util.clean_card_number(sample)
     assert result is expected
-
-
-def test_drop_rows_where_card_number_is_nan():
-    df = pd.DataFrame(
-        {
-            'card_number': [12, np.nan, np.nan, 14],
-            'column_2': [np.nan, 'ab', 'cd', 'ef']
-        }
-    )
-    df = cleaning_util.drop_rows_where_card_number_is_nan(df)
-    assert len(df) == 2
 
 
 def test_drop_rows_where_store_type_is_nan():

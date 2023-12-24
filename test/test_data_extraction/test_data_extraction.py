@@ -21,14 +21,14 @@ def test_read_rds_table():
 
 def test_retrieve_data_returns_pd_data_frame():
     extractor = DataExtractor()
-    url = extractor.pdf_url
+    url = extractor.PDF_URL
     result = extractor.retrieve_pdf_data(url)
     assert isinstance(result, DataFrame)
 
 
 def test_retrieve_pdf_data_retrieve_all_records():
     extractor = DataExtractor()
-    url = extractor.pdf_url
+    url = extractor.PDF_URL
     result = extractor.retrieve_pdf_data(url)
     assert len(result) == 15309
 
@@ -116,4 +116,3 @@ def test_extract_from_s3_returns_all_product_data():
     print(s3_address)
     result = extractor.extract_from_s3(s3_address=s3_address)
     assert len(result) == 1853
-
