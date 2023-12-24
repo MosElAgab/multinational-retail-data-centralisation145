@@ -307,3 +307,208 @@ def test_remove_alpha_letters_from_staff_number():
     expected = 80
     result = cleaning_util.remove_alpha_letters_from_staff_number(sample)
     assert result is expected
+
+
+def test_convert_product_weights_returns_pd_dataframe():
+    sample_data = {"weight": [i for i in range(10)]}
+    sample_df = pd.DataFrame(sample_data)
+    result_df = cleaning_util.convert_product_weights(sample_df)
+    assert isinstance(result_df, pd.DataFrame)
+
+
+def test_convert_product_weights_skips_weights_in_kg():
+    sample_data = {
+        "index": [i for i in range(2)],
+        "weight": ["1.6kg", "0.46kg"]
+    }
+    sample_df = pd.DataFrame(sample_data)
+    sample_df.set_index("index", inplace=True)
+    result_df = cleaning_util.convert_product_weights(sample_df)
+    result = result_df.loc[0, "weight"]
+    expected = "1.6kg"
+    assert result == expected
+    result = result_df.loc[1, "weight"]
+    expected = "0.46kg"
+    assert result == expected
+
+
+def test_convert_product_weights_converts_g_to_kg():
+    sample_data = {
+        "index": [i for i in range(4)],
+        "weight": ["1.6kg", "125g", "9.4kg", "590g"]
+    }
+    sample_df = pd.DataFrame(sample_data)
+    sample_df.set_index("index", inplace=True)
+    result_df = cleaning_util.convert_product_weights(sample_df)
+    result = result_df.loc[1, "weight"]
+    expected = "0.125kg"
+    assert result == expected
+    result = result_df.loc[3, "weight"]
+    expected = "0.59kg"
+    assert result == expected
+
+
+def test_convert_product_weights_converts_ml_to_kg():
+    sample_data = {
+        "index": [i for i in range(4)],
+        "weight": ["100ml", "125g", "9.4kg", "800ml"]
+    }
+    sample_df = pd.DataFrame(sample_data)
+    sample_df.set_index("index", inplace=True)
+    result_df = cleaning_util.convert_product_weights(sample_df)
+    result = result_df.loc[0, "weight"]
+    expected = "0.1kg"
+    assert result == expected
+    result = result_df.loc[3, "weight"]
+    expected = "0.8kg"
+    assert result == expected
+
+
+def test_convert_product_weights_converts_oz_to_kg():
+    sample_data = {
+        "index": [i for i in range(5)],
+        "weight": ["100ml", "16oz", "125g", "12oz", "800ml"]
+    }
+    sample_df = pd.DataFrame(sample_data)
+    sample_df.set_index("index", inplace=True)
+    result_df = cleaning_util.convert_product_weights(sample_df)
+    result = result_df.loc[1, "weight"]
+    expected = "0.454kg"
+    assert result == expected
+    result = result_df.loc[3, "weight"]
+    expected = "0.34kg"
+    assert result == expected
+
+
+def test_convert_product_weights_replaces_invalid_values_with_nan():
+    sample_data = {
+        "index": [i for i in range(5)],
+        "weight": ["C3NCA2CL35", "16oz", "125g", "BSDTR67VD90", "800ml"]
+    }
+    sample_df = pd.DataFrame(sample_data)
+    sample_df.set_index("index", inplace=True)
+    result_df = cleaning_util.convert_product_weights(sample_df)
+    result = result_df.loc[0, "weight"]
+    expected = np.nan
+    assert result is expected
+    result = result_df.loc[0, "weight"]
+    expected = np.nan
+    assert result is expected
+
+
+
+
+def test_convert_to_kg_skipps_valid_value():
+    sample = "1.6kg"
+    result = cleaning_util.convert_to_kg(sample)
+    expected = "1.6kg"
+    assert result == expected
+
+
+def test_convert_to_kg_skips_invalid_values():
+    sample = np.nan
+    result = cleaning_util.convert_to_kg(sample)
+    expected = np.nan
+    assert result is expected
+    sample = "ERGF43DS7C"
+    result = cleaning_util.convert_to_kg(sample)
+    expected = "ERGF43DS7C"
+    assert result == expected
+
+
+def test_convert_to_kg_converts_g_to_kg():
+    sample = "125g"
+    result = cleaning_util.convert_to_kg(sample)
+    expected = "0.125kg"
+    assert result == expected
+    sample = "590g"
+    result = cleaning_util.convert_to_kg(sample)
+    expected = "0.59kg"
+    assert result == expected
+
+
+def test_convert_to_kg_converts_ml_to_kg():
+    sample = "111ml"
+    result = cleaning_util.convert_to_kg(sample)
+    expected = "0.111kg"
+    assert result == expected
+    sample = "800ml"
+    result = cleaning_util.convert_to_kg(sample)
+    expected = "0.8kg"
+    assert result == expected
+
+
+def test_convert_to_kg_converts_oz_to_kg():
+    sample = "16oz"
+    result = cleaning_util.convert_to_kg(sample)
+    expected = "0.454kg"
+    assert result == expected
+    sample = "12oz"
+    result = cleaning_util.convert_to_kg(sample)
+    expected = "0.34kg"
+    assert result == expected
+
+
+def test_convert_to_kg_converts_multiple_of_weights_in_g_to_kg():
+    sample = "12 x 100g"
+    result = cleaning_util.convert_to_kg(sample)
+    expected = "1.2kg"
+    assert result == expected
+    sample = "6 x 412g"
+    result = cleaning_util.convert_to_kg(sample)
+    expected = "2.472kg"
+    assert result == expected
+
+
+def test_convert_to_kg_converts_misstyped_g_to_kg():
+    sample = "77g ."
+    result = cleaning_util.convert_to_kg(sample)
+    expected = "0.077kg"
+    assert result == expected
+    sample = "412g   ."
+    result = cleaning_util.convert_to_kg(sample)
+    expected = "0.412kg"
+    assert result == expected
+
+
+# def test_clean_card_data_returns_pd_dataframe():
+#     sample = pd.DataFrame()
+
+# test_is_invalid_time_period_retruns_boolean
+# test_is_invalid_time_period_retruns_false_for_nan
+# test_is_invalid_time_period_retruns_false_for_valid_values
+# test_is_invalid_time_period_retruns_true_for_invalid_values
+    
+def test_is_invalid_time_period_retruns_boolean():
+    sample = "evening"
+    result = cleaning_util.is_invalid_time_period(sample)
+    assert isinstance(result, bool)
+
+
+def test_is_invalid_time_period_retruns_false_for_nan():
+    sample = np.nan
+    expected = False
+    result = cleaning_util.is_invalid_time_period(sample)
+    assert result is expected
+
+
+def test_is_invalid_time_period_retruns_false_for_valid_values():
+    sample = "Evening"
+    expected = False
+    result = cleaning_util.is_invalid_time_period(sample)
+    assert result is expected
+    sample = "Late_Hours"
+    expected = False
+    result = cleaning_util.is_invalid_time_period(sample)
+    assert result is expected
+
+
+def test_is_invalid_time_period_retruns_true_for_invalid_values():
+    sample = "FIEOPTNBWZ"
+    expected = True
+    result = cleaning_util.is_invalid_time_period(sample)
+    assert result is expected
+    sample = "LUVV7GL3QQ"
+    expected = True
+    result = cleaning_util.is_invalid_time_period(sample)
+    assert result is expected

@@ -153,11 +153,10 @@ dmypy.json
 cython_debug/
 
 # db credentials
-db_creds.yaml
-local_db_creds.yaml
-my_py.py
+*.yaml
 *.pdf
-stores_data.csv
+*.csv
+my_py.py
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

@@ -1,6 +1,7 @@
 from pandas import DataFrame
 from src.data_extraction import DataExtractor
 from src.database_utils import DatabaseConnector
+from decouple import config
 
 connection = DatabaseConnector()
 engine = connection.init_db_engine()
@@ -30,6 +31,7 @@ def test_retrieve_pdf_data_retrieve_all_records():
     url = extractor.pdf_url
     result = extractor.retrieve_pdf_data(url)
     assert len(result) == 15309
+
 
 def test_list_number_of_stores_retruns_integer():
     extractor = DataExtractor()
@@ -67,3 +69,51 @@ def test_list_number_of_stores_retruns_correct_number_stores():
 #     headers = extractor.HEADERS
 #     result = extractor.retrieve_store_data(url, headers, number_of_stores)
 #     assert len(result) == number_of_stores
+
+
+def test_parse_s3_address_retruns_dictionary():
+    extractor = DataExtractor()
+    s3_address = "s3://my_bucket/data.csv"
+    result = extractor.parse_s3_address(s3_address)
+    assert isinstance(result, dict)
+
+
+def test_parse_s3_address_returns_valid_dictionary_keys():
+    extractor = DataExtractor()
+    s3_address = "s3://my_bucket/data.csv"
+    result = extractor.parse_s3_address(s3_address)
+    assert "BUCKET_NAME" in result.keys()
+    assert "KEY" in result.keys()
+
+
+def test_parse_s3_address_returns_valid_bucket_name():
+    extractor = DataExtractor()
+    s3_address = "s3://my_bucket/data.csv"
+    result = extractor.parse_s3_address(s3_address)
+    assert result["BUCKET_NAME"] == "my_bucket"
+
+
+def test_parse_s3_address_returns_valid_bucket_key():
+    extractor = DataExtractor()
+    s3_address = "s3://my_bucket/data.csv"
+    result = extractor.parse_s3_address(s3_address)
+    assert result["KEY"] == "data.csv"
+    s3_address = "s3://my_bucket/books/data.csv"
+    result = extractor.parse_s3_address(s3_address)
+    assert result["KEY"] == "books/data.csv"
+
+
+def test_extract_from_s3_retruns_pd_dataframe():
+    extractor = DataExtractor()
+    s3_address = config("S3_ADDRESS")
+    result = extractor.extract_from_s3(s3_address=s3_address)
+    assert isinstance(result, DataFrame)
+
+
+def test_extract_from_s3_returns_all_product_data():
+    extractor = DataExtractor()
+    s3_address = config("S3_ADDRESS")
+    print(s3_address)
+    result = extractor.extract_from_s3(s3_address=s3_address)
+    assert len(result) == 1853
+
