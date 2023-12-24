@@ -39,7 +39,7 @@ print("*** processing cards_data")
 
 # extract card data
 print("...extracting")
-url = extractor.pdf_url
+url = extractor.PDF_URL
 cards_df = extractor.retrieve_pdf_data(url)
 
 # clean card data

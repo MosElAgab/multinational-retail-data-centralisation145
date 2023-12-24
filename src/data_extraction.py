@@ -15,10 +15,10 @@ class DataExtractor():
     }
     STORE_DATA_URL = config("STORE_DATA_URL")
     S3_ADDRESS = config("S3_ADDRESS")
+    PDF_URL = config("PDF-URL")
 
     def __init__(self) -> None:
-        self.pdf_url = config("PDF_URL")
-        # self.pdf_url = "./card_details.pdf"
+        pass
 
     def list_db_tables(self, engine):
         inspector = inspect(engine)

@@ -1,5 +1,6 @@
 from dateutil.parser import parse, ParserError
 from datetime import datetime as dt
+from pandas import DataFrame
 import numpy as np
 import pandas as pd
 
@@ -9,11 +10,11 @@ class DataCleaning():
     def __init__(self) -> None:
         pass
 
-    def clean_user_data(self, users_df: pd.DataFrame) -> pd.DataFrame:
+    def clean_user_data(self, users_df: DataFrame) -> DataFrame:
         df = users_df.copy()
         # drop index column
         df.drop(columns="index", inplace=True)
-        # replace nulls by nans
+        # replace NULL with nans
         df = self.replace_null_with_nan(df)
         # mask invalid data by catching invalid first_name
         invalid_name_mask = df["first_name"].apply(
@@ -21,10 +22,12 @@ class DataCleaning():
         )
         df.mask(invalid_name_mask, inplace=True)
         # fix date format
-        df["date_of_birth"] = df["date_of_birth"].apply(
+        column = "date_of_birth"
+        df[column] = df[column].apply(
             self.fix_date_format
         )
-        df["join_date"] = df["join_date"].apply(
+        column = "join_date"
+        df[column] = df[column].apply(
             self.fix_date_format
         )
         # clean email address
@@ -42,19 +45,28 @@ class DataCleaning():
         df.set_index("index", inplace=True)
         return df
 
-    def clean_card_data(self, cards_df):
-        cards_df = self.replace_null_with_nan(cards_df)
-        cards_df["card_number"] = cards_df["card_number"].apply(
+    def clean_card_data(self, cards_df: DataFrame) -> DataFrame:
+        df = cards_df.copy()
+        # replace NULL with nans
+        df = self.replace_null_with_nan(df)
+        # # clean card number
+        df["card_number"] = df["card_number"].apply(
             self.clean_card_number
         )
-        cards_df = self.drop_rows_where_card_number_is_nan(cards_df)
-        fixed_dates = cards_df["date_payment_confirmed"].apply(
+        # mask invalid data by catching invalid card_number (nan)
+        invalid_card_number_mask = df["card_number"].isna()
+        df.mask(invalid_card_number_mask, inplace=True)
+        # fix date format
+        column = "date_payment_confirmed"
+        df.loc[:, column] = df[column].apply(
             self.fix_date_format
         )
-        cards_df.loc[:, "date_payment_confirmed"] = fixed_dates
-        cards_df["index"] = self.generate_index_list(cards_df)
-        cards_df.set_index("index", inplace=True)
-        return cards_df
+        # drop rows where all values are nans
+        df.dropna(how="all", inplace=True)
+        # # set index
+        df["index"] = self.generate_index_list(df)
+        df.set_index("index", inplace=True)
+        return df
 
     def clean_store_data(self, stores_df):
         stores_df = self.replace_null_with_nan(stores_df)
@@ -121,13 +133,6 @@ class DataCleaning():
     def replace_null_with_nan(self, df: pd.DataFrame) -> pd.DataFrame:
         return df.replace("NULL", np.nan)
 
-    def drop_rows_where_name_is_nan(self, df):
-        mask_1 = df["first_name"].isna()
-        mask_2 = df["last_name"].isna()
-        mask = (mask_1 & mask_2)
-        df = df[~mask]
-        return df
-
     def fix_date_format(self, date: str):
         try:
             string_date = str(date)
@@ -165,10 +170,6 @@ class DataCleaning():
         else:
             return np.nan
 
-    def drop_rows_where_card_number_is_nan(self, cards_df):
-        mask = cards_df['card_number'].isna()
-        return cards_df[~mask]
-
     def drop_rows_where_store_type_is_nan(self, stores_df):
         mask = stores_df["store_type"].isna()
         return stores_df[~mask]
@@ -195,7 +196,7 @@ class DataCleaning():
             return int(fixed_staff_numbers)
         return staff_number
 
-    def convert_product_weights(self, products_df: pd.DataFrame) -> pd.DataFrame:
+    def convert_product_weights(self, products_df: DataFrame) -> DataFrame:
         df = products_df.copy()
         df["weight"] = df["weight"].apply(self.convert_to_kg)
         mask = df["weight"].apply(lambda value: "kg" in str(value))
