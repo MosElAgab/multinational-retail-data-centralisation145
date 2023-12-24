@@ -15,6 +15,7 @@ class DataExtractor():
     }
     STORE_DATA_URL = config("STORE_DATA_URL")
     S3_ADDRESS = config("S3_ADDRESS")
+
     def __init__(self) -> None:
         self.pdf_url = config("PDF_URL")
         # self.pdf_url = "./card_details.pdf"
@@ -54,19 +55,19 @@ class DataExtractor():
         bucket_name = s3_address_data["BUCKET_NAME"]
         key = s3_address_data["KEY"]
         s3 = boto3.resource('s3')
-        products_download_file_path = config("PRODUCTS_DOWNLOAD_FILE_PATH")
+        download_path = config("PRODUCTS_DOWNLOAD_FILE_PATH")
         try:
-            s3.Bucket(bucket_name).download_file(key, products_download_file_path)
+            s3.Bucket(bucket_name).download_file(key, download_path)
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == "404":
                 print("The s3 object does not exist.")
             else:
                 raise
-        products_df = pd.read_csv(products_download_file_path, index_col=0)
+        products_df = pd.read_csv(download_path, index_col=0)
         return products_df
 
     def parse_s3_address(self, s3_address):
-        parsed_s3_address =  urlparse(s3_address, allow_fragments=False)
+        parsed_s3_address = urlparse(s3_address, allow_fragments=False)
         bucket_name = parsed_s3_address.netloc
         key = parsed_s3_address.path.lstrip("/")
         output_data = {
@@ -74,7 +75,7 @@ class DataExtractor():
             "KEY": key
         }
         return output_data
-    
+
     def extract_date_events_data(self, file_address: str) -> pd.DataFrame:
         date_events_df = pd.read_json(file_address)
         return date_events_df

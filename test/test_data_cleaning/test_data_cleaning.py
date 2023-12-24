@@ -42,22 +42,6 @@ def test_replace_null_with_nan():
     assert result is expected
 
 
-# test replace invalid values with nan
-def test_replace_invalid_name():
-    sample = "WSRSCUDTR"
-    result = cleaning_util.replace_invalid_name_with_nan(sample)
-    expected = np.nan
-    assert result is expected
-    sample = "PYCLKLLC7I"
-    result = cleaning_util.replace_invalid_name_with_nan(sample)
-    expected = np.nan
-    assert result is expected
-    sample = "Alex"
-    result = cleaning_util.replace_invalid_name_with_nan(sample)
-    expected = "Alex"
-    assert result == expected
-
-
 def test_drop_rows_where_name_is_nan():
     data = {
         "i": [1, 2, 3, 4],
@@ -100,48 +84,15 @@ def test_fix_date_format_ignores_nans():
     assert result is expected
 
 
-# test validate email
-def test_validate_email():
-    sample = "PYCLKLLC7I"
-    result = cleaning_util.validate_email_address(sample)
-    expected = False
-    assert result is expected
-    sample = "PYCLKLLCRTI"
-    result = cleaning_util.validate_email_address(sample)
-    expected = False
-    assert result is expected
-    sample = "abcd@efg@hello"
-    result = cleaning_util.validate_email_address(sample)
-    expected = False
-    assert result is expected
-    sample = "abcd@efg.hijk"
-    result = cleaning_util.validate_email_address(sample)
-    expected = True
-    assert result is expected
-
-
-# test replace invalid name with nan
-def test_replace_invalid_email_with_nan():
+# test assign valid country code
+def test_assign_valid_country_code_skips_nana():
     sample = np.nan
     expected = np.nan
-    result = cleaning_util.replace_invalid_email_with_nan(sample)
-    assert result is expected
-    sample = "name@company.com"
-    expected = "name@company.com"
-    result = cleaning_util.replace_invalid_email_with_nan(sample)
-    assert result == expected
-    sample = "PYCLKLLC7I"
-    expected = np.nan
-    result = cleaning_util.replace_invalid_email_with_nan(sample)
-    assert result is expected
-    sample = "PYCLKLLCRTI"
-    expected = np.nan
-    result = cleaning_util.replace_invalid_email_with_nan(sample)
+    result = cleaning_util.assign_valid_country_code(sample)
     assert result is expected
 
 
-# test assign valid country code
-def test_assign_valid_country_code():
+def test_assign_valid_country_code_assings_valid_country_code():
     sample = "United Kingdom"
     expected = "UK"
     result = cleaning_util.assign_valid_country_code(sample)
@@ -157,26 +108,6 @@ def test_assign_valid_country_code():
     sample = "ACDE45ASDD"
     expected = np.nan
     result = cleaning_util.assign_valid_country_code(sample)
-    assert result is expected
-
-
-# test replace invalid phone number with nan
-def test_replace_invalid_phone_number_with_nan():
-    sample = "ACDE45ASDD"
-    expected = np.nan
-    result = cleaning_util.replace_invalid_phone_numbers_with_nan(sample)
-    assert result is expected
-    sample = "ACDE45ASDD"
-    expected = np.nan
-    result = cleaning_util.replace_invalid_phone_numbers_with_nan(sample)
-    assert result is expected
-    sample = np.nan
-    expected = np.nan
-    result = cleaning_util.replace_invalid_phone_numbers_with_nan(sample)
-    assert result is expected
-    sample = "+44(0)117 496 0576"
-    expected = "+44(0)117 496 0576"
-    result = cleaning_util.replace_invalid_phone_numbers_with_nan(sample)
     assert result is expected
 
 
@@ -396,8 +327,6 @@ def test_convert_product_weights_replaces_invalid_values_with_nan():
     assert result is expected
 
 
-
-
 def test_convert_to_kg_skipps_valid_value():
     sample = "1.6kg"
     result = cleaning_util.convert_to_kg(sample)
@@ -471,14 +400,6 @@ def test_convert_to_kg_converts_misstyped_g_to_kg():
     assert result == expected
 
 
-# def test_clean_card_data_returns_pd_dataframe():
-#     sample = pd.DataFrame()
-
-# test_is_invalid_time_period_retruns_boolean
-# test_is_invalid_time_period_retruns_false_for_nan
-# test_is_invalid_time_period_retruns_false_for_valid_values
-# test_is_invalid_time_period_retruns_true_for_invalid_values
-    
 def test_is_invalid_time_period_retruns_boolean():
     sample = "evening"
     result = cleaning_util.is_invalid_time_period(sample)
@@ -511,4 +432,39 @@ def test_is_invalid_time_period_retruns_true_for_invalid_values():
     sample = "LUVV7GL3QQ"
     expected = True
     result = cleaning_util.is_invalid_time_period(sample)
+    assert result is expected
+
+
+def test_is_invalid_data_point_retruns_boolean():
+    sample = "evening"
+    result = cleaning_util.is_invalid_data_point(sample)
+    assert isinstance(result, bool)
+
+
+def test_is_invalid_data_point_retruns_false_for_nan():
+    sample = np.nan
+    expected = False
+    result = cleaning_util.is_invalid_data_point(sample)
+    assert result is expected
+
+
+def test_is_invalid_data_point_retruns_true_for_invalid_data_points():
+    sample = "FIEOPTNBWZ"
+    expected = True
+    result = cleaning_util.is_invalid_data_point(sample)
+    assert result is expected
+    sample = "LUVV7GL3QQ"
+    expected = True
+    result = cleaning_util.is_invalid_data_point(sample)
+    assert result is expected
+
+
+def test_is_invalid_data_point_retruns_false_for_everything_else():
+    sample = "Allen"
+    expected = False
+    result = cleaning_util.is_invalid_data_point(sample)
+    assert result is expected
+    sample = "Late_Hours"
+    expected = False
+    result = cleaning_util.is_invalid_data_point(sample)
     assert result is expected

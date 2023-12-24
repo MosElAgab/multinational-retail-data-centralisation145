@@ -1,9 +1,7 @@
-import numpy as np
-import pandas as pd
-import re
 from dateutil.parser import parse, ParserError
 from datetime import datetime as dt
-
+import numpy as np
+import pandas as pd
 
 
 class DataCleaning():
@@ -11,50 +9,38 @@ class DataCleaning():
     def __init__(self) -> None:
         pass
 
-    def clean_user_data(self, users_df):
+    def clean_user_data(self, users_df: pd.DataFrame) -> pd.DataFrame:
+        df = users_df.copy()
+        # drop index column
+        df.drop(columns="index", inplace=True)
         # replace nulls by nans
-        users_df = self.replace_null_with_nan(users_df)
-        # clean first name
-        users_df["first_name"] = users_df["first_name"].apply(
-             self.replace_invalid_name_with_nan
-             )
-        # clean last name
-        users_df["last_name"] = users_df["last_name"].apply(
-             self.replace_invalid_name_with_nan
-             )
-        # drop rows where first/last_name is nan
-        users_df = self.drop_rows_where_name_is_nan(users_df)
-        # clean date_of_birth
-        users_df["date_of_birth"] = users_df["date_of_birth"].apply(
-             self.fix_date_format
-             )
+        df = self.replace_null_with_nan(df)
+        # mask invalid data by catching invalid first_name
+        invalid_name_mask = df["first_name"].apply(
+            self.is_invalid_data_point
+        )
+        df.mask(invalid_name_mask, inplace=True)
+        # fix date format
+        df["date_of_birth"] = df["date_of_birth"].apply(
+            self.fix_date_format
+        )
+        df["join_date"] = df["join_date"].apply(
+            self.fix_date_format
+        )
         # clean email address
-        cleaned_emails = users_df['email_address'].str.replace("@@", '@')
-        users_df["email_address"] = cleaned_emails.apply(
-             self.replace_invalid_email_with_nan
-             )
-        # clean country_code
-        users_df["country_code"] = users_df["country"].apply(
-             self.assign_valid_country_code
-             )
+        df["email_address"] = df["email_address"].str.replace("@@", "@")
+        # # clean country_code
+        df["country_code"] = df["country"].apply(
+            self.assign_valid_country_code
+        )
         # clean phone_number
-        users_df["phone_number"] = users_df["phone_number"].apply(
-             self.replace_invalid_phone_numbers_with_nan
-             )
-        users_df["phone_number"] = users_df["phone_number"].str.replace(
-            'x',
-            ''
-            )
-        # clean join_date
-        users_df["join_date"] = users_df["join_date"].apply(
-             self.fix_date_format
-             )
-        # Drop rows with less than 5 non-null values
-        users_df.dropna(thresh=5, inplace=True)
-        # update index
-        users_df['index'] = self.generate_index_list(users_df)
-        users_df.set_index("index", inplace=True)
-        return users_df
+        df["phone_number"] = df["phone_number"].str.replace("x", "")
+        # drop rows where all values are nans
+        df.dropna(how="all", inplace=True)
+        # set index
+        df["index"] = self.generate_index_list(df)
+        df.set_index("index", inplace=True)
+        return df
 
     def clean_card_data(self, cards_df):
         cards_df = self.replace_null_with_nan(cards_df)
@@ -117,7 +103,7 @@ class DataCleaning():
         df.set_index("index", inplace=True)
         return df
 
-    def clean_date_events(self, date_events_df:pd.DataFrame) -> pd.DataFrame:
+    def clean_date_events(self, date_events_df: pd.DataFrame) -> pd.DataFrame:
         df = date_events_df.copy()
         df = self.replace_null_with_nan(df)
         # mask invalid data by catching invalid time_period
@@ -130,34 +116,10 @@ class DataCleaning():
         df.dropna(inplace=True, how="all")
         df["index"] = self.generate_index_list(df)
         df.set_index("index", inplace=True)
-        return df 
+        return df
 
     def replace_null_with_nan(self, df: pd.DataFrame) -> pd.DataFrame:
         return df.replace("NULL", np.nan)
-
-    def replace_invalid_name_with_nan(self, value):
-        if value is np.nan:
-            return value
-        # value conditions
-        one_word = len(value.split(" ")) == 1
-        contain_numbers = any(char.isdigit() for char in value)
-        upper_case = value.isupper()
-
-        if one_word and contain_numbers:
-            return np.nan
-        elif one_word and upper_case:
-            return np.nan
-        else:
-            return value
-
-    def replace_invalid_phone_numbers_with_nan(self, phone_number):
-        try:
-            if any(char.isalpha() and char.isupper() for char in phone_number):
-                return np.nan
-            else:
-                return phone_number
-        except TypeError:
-            return phone_number
 
     def drop_rows_where_name_is_nan(self, df):
         mask_1 = df["first_name"].isna()
@@ -177,20 +139,6 @@ class DataCleaning():
         except ValueError:
             return np.nan
         except TypeError:
-            return np.nan
-
-    def validate_email_address(self, email):
-        pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-        return re.match(pattern, email) is not None
-
-    def replace_invalid_email_with_nan(self, email):
-        if email is np.nan:
-            return email
-        elif self.validate_email_address(email):
-            return email
-        elif "@" in email:
-            return email
-        else:
             return np.nan
 
     def assign_valid_country_code(self, country):
@@ -246,14 +194,14 @@ class DataCleaning():
                     fixed_staff_numbers = fixed_staff_numbers.replace(char, "")
             return int(fixed_staff_numbers)
         return staff_number
-    
+
     def convert_product_weights(self, products_df: pd.DataFrame) -> pd.DataFrame:
         df = products_df.copy()
         df["weight"] = df["weight"].apply(self.convert_to_kg)
         mask = df["weight"].apply(lambda value: "kg" in str(value))
         df["weight"].mask(~mask, inplace=True)
         return df
-    
+
     def convert_to_kg(self, value):
         try:
             value_string = str(value)
@@ -267,7 +215,7 @@ class DataCleaning():
                 value_kg = (weight * multiple) / 1000
                 value_kg = round(value_kg, 3)
                 return str(value_kg) + "kg"
-            elif "g" in  value_string:
+            elif "g" in value_string:
                 value_kg = float(str(value_string).replace("g", "")) / 1000
                 value_kg = round(value_kg, 3)
                 return str(value_kg) + "kg"
@@ -290,6 +238,17 @@ class DataCleaning():
         is_single_word = len(time_period_str.split(" ")) == 1
         contain_digit = any([char.isdigit() for char in time_period_str])
         is_upper_case = time_period_str.isupper()
+        if is_single_word and contain_digit:
+            return True
+        elif is_single_word and is_upper_case:
+            return True
+        return False
+
+    def is_invalid_data_point(self, value: str) -> bool:
+        value_str = str(value)
+        is_single_word = len(value_str.split(" ")) == 1
+        contain_digit = any([char.isdigit() for char in value_str])
+        is_upper_case = value_str.isupper()
         if is_single_word and contain_digit:
             return True
         elif is_single_word and is_upper_case:
