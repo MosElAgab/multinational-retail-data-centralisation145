@@ -82,7 +82,7 @@ def test_assign_valid_country_code_skips_nana():
 
 def test_assign_valid_country_code_assings_valid_country_code():
     sample = "United Kingdom"
-    expected = "UK"
+    expected = "GB"
     result = cleaning_util.assign_valid_country_code(sample)
     assert result == expected
     sample = "United States"
@@ -148,46 +148,6 @@ def test_clean_card_number_removes_invalid_values():
     assert result is expected
 
 
-def test_drop_rows_where_store_type_is_nan():
-    df = pd.DataFrame(
-        {
-            'store_type': [12, np.nan, np.nan, 14],
-            'column_2': [np.nan, 'ab', 'cd', 'ef']
-        }
-    )
-    df = cleaning_util.drop_rows_where_store_type_is_nan(df)
-    assert len(df) == 2
-
-
-def test_replace_invalid_stoe_type_with_nan_skips_nans():
-    sample = np.nan
-    expected = np.nan
-    result = cleaning_util.replace_invalid_store_type_with_nan(sample)
-    assert result is expected
-
-
-def test_replace_invalid_stoe_type_with_nan_skips_valid_values():
-    sample = "Super Store"
-    expected = "Super Store"
-    result = cleaning_util.replace_invalid_store_type_with_nan(sample)
-    assert result is expected
-    sample = "Local"
-    expected = "Local"
-    result = cleaning_util.replace_invalid_store_type_with_nan(sample)
-    assert result is expected
-    sample = "Web Portal"
-    expected = "Web Portal"
-    result = cleaning_util.replace_invalid_store_type_with_nan(sample)
-    assert result is expected
-
-
-def test_replace_inavalid_longitude_with_nan():
-    sample = "Q1TJY8H1ZH"
-    expected = np.nan
-    result = cleaning_util.replace_invalid_store_type_with_nan(sample)
-    assert result is expected
-
-
 def test_remove_alpha_letters_from_staff_number_skips_nans():
     sample = np.nan
     expected = np.nan
@@ -196,25 +156,25 @@ def test_remove_alpha_letters_from_staff_number_skips_nans():
 
 
 def test_remove_alpha_letters_from_staff_number_skips_valid_valus():
-    sample = 320
-    expected = 320
+    sample = "320"
+    expected = "320"
     result = cleaning_util.remove_alpha_letters_from_staff_number(sample)
     assert result == expected
     sample = 46
-    expected = 46
+    expected = "46"
     result = cleaning_util.remove_alpha_letters_from_staff_number(sample)
     assert result == expected
 
 
 def test_remove_alpha_letters_from_staff_number():
     sample = "J78"
-    expected = 78
+    expected = "78"
     result = cleaning_util.remove_alpha_letters_from_staff_number(sample)
-    assert result is expected
+    assert result == expected
     sample = "80R"
-    expected = 80
+    expected = "80"
     result = cleaning_util.remove_alpha_letters_from_staff_number(sample)
-    assert result is expected
+    assert result == expected
 
 
 def test_convert_product_weights_returns_pd_dataframe():
@@ -375,41 +335,6 @@ def test_convert_to_kg_converts_misstyped_g_to_kg():
     result = cleaning_util.convert_to_kg(sample)
     expected = "0.412kg"
     assert result == expected
-
-
-def test_is_invalid_time_period_retruns_boolean():
-    sample = "evening"
-    result = cleaning_util.is_invalid_time_period(sample)
-    assert isinstance(result, bool)
-
-
-def test_is_invalid_time_period_retruns_false_for_nan():
-    sample = np.nan
-    expected = False
-    result = cleaning_util.is_invalid_time_period(sample)
-    assert result is expected
-
-
-def test_is_invalid_time_period_retruns_false_for_valid_values():
-    sample = "Evening"
-    expected = False
-    result = cleaning_util.is_invalid_time_period(sample)
-    assert result is expected
-    sample = "Late_Hours"
-    expected = False
-    result = cleaning_util.is_invalid_time_period(sample)
-    assert result is expected
-
-
-def test_is_invalid_time_period_retruns_true_for_invalid_values():
-    sample = "FIEOPTNBWZ"
-    expected = True
-    result = cleaning_util.is_invalid_time_period(sample)
-    assert result is expected
-    sample = "LUVV7GL3QQ"
-    expected = True
-    result = cleaning_util.is_invalid_time_period(sample)
-    assert result is expected
 
 
 def test_is_invalid_data_point_retruns_boolean():
