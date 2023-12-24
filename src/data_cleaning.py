@@ -97,17 +97,22 @@ class DataCleaning():
         df.dropna(how="all", inplace=True)
         return df
 
-    def clean_products_data(self, products_df: pd.DataFrame) -> pd.DataFrame:
+    def clean_products_data(self, products_df: DataFrame) -> DataFrame:
         df = products_df.copy()
+        # convert product weights to kg
         df = self.convert_product_weights(df)
-        df["date_added"] = df["date_added"].apply(
+        # fix date format
+        column = "date_added"
+        df[column] = df[column].apply(
             self.fix_date_format
         )
-        mask = df["weight"].isna()
-        df.mask(mask, inplace=True)
-        df.dropna(inplace=True)
-        df["index"] = self.generate_index_list(df)
-        df.set_index("index", inplace=True)
+        # mask invalid data by catching invalid weight
+        invalid_weight_mask = df["weight"].isna()
+        df.mask(invalid_weight_mask, inplace=True)
+       # drop rows where all values are nans
+        df.dropna(how="all", inplace=True)
+        # reset index
+        df.reset_index(inplace=True, drop=True)
         return df
 
     def clean_orders_data(self, orders_df: pd.DataFrame) -> pd.DataFrame:
