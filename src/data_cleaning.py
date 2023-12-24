@@ -41,9 +41,8 @@ class DataCleaning():
         df["phone_number"] = df["phone_number"].str.replace("x", "")
         # drop rows where all values are nans
         df.dropna(how="all", inplace=True)
-        # set index
-        df["index"] = self.generate_index_list(df)
-        df.set_index("index", inplace=True)
+        # reset index
+        df.reset_index(inplace=True, drop=True)
         return df
 
     def clean_card_data(self, cards_df: DataFrame) -> DataFrame:
@@ -65,9 +64,8 @@ class DataCleaning():
         )
         # drop rows where all values are nans
         df.dropna(how="all", inplace=True)
-        # # set index
-        df["index"] = self.generate_index_list(df)
-        df.set_index("index", inplace=True)
+        # reset index
+        df.reset_index(inplace=True, drop=True)
         return df
 
     def clean_store_data(self, stores_df: DataFrame) -> DataFrame:
@@ -98,6 +96,8 @@ class DataCleaning():
         df[column] = df[column].str.replace("ee", "")
         # drop rows where all values are nans
         df.dropna(how="all", inplace=True)
+        # reset index
+        df.reset_index(inplace=True, drop=True)
         return df
 
     def clean_products_data(self, products_df: DataFrame) -> DataFrame:
@@ -168,10 +168,6 @@ class DataCleaning():
             return country_code_map[country]
         except KeyError:
             return np.nan
-
-    def generate_index_list(self, df: DataFrame) -> list:
-        index = [i for i in range(len(df))]
-        return index
 
     def clean_card_number(self, card_number: str) -> str:
         card_number_string = str(card_number)

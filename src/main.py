@@ -88,7 +88,7 @@ print("*** processing cards_data")
 
 # extract product data
 print("...extracting")
-s3_address = config("S3_ADDRESS")
+s3_address = extractor.S3_ADDRESS
 products_df = extractor.extract_from_s3(s3_address)
 
 # clean products data
@@ -144,7 +144,7 @@ clean_date_events_df = cleaning_util.clean_date_events(date_events_df)
 
 # upload date events
 print("...uploading")
-table_name = "dim_date_time"
+table_name = "dim_date_times"
 upload_engine = connection.init_upload_db_engine()
 connection.upload_to_db(clean_date_events_df, table_name, upload_engine)
 

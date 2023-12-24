@@ -55,7 +55,7 @@ class DataExtractor():
         bucket_name = s3_address_data["BUCKET_NAME"]
         key = s3_address_data["KEY"]
         s3 = boto3.resource('s3')
-        download_path = config("PRODUCTS_DOWNLOAD_FILE_PATH")
+        download_path = "./data/products.csv"
         try:
             s3.Bucket(bucket_name).download_file(key, download_path)
         except botocore.exceptions.ClientError as e:

@@ -52,4 +52,4 @@ class DatabaseConnector():
         return engine
 
     def upload_to_db(self, df: DataFrame, table_name: str, engine) -> None:
-        df.to_sql(name=table_name, con=engine, if_exists="replace")
+        df.to_sql(name=table_name, con=engine, if_exists="replace", index=False)

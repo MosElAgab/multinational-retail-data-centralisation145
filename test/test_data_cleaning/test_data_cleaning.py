@@ -99,23 +99,6 @@ def test_assign_valid_country_code_assings_valid_country_code():
     assert result is expected
 
 
-# test generate index
-def test_generate_index():
-    data = {
-        "index": [1, 23, 4, 6, 5, 10, 11, 12, 13, 15],
-        "id": [i for i in range(10)],
-        'value': ['a' for i in range(10)]
-    }
-    df = pd.DataFrame(data)
-    result = cleaning_util.generate_index_list(df)
-    # test it generates a list with same length as the df
-    assert len(result) == len(df)
-    # test start index
-    assert result[0] == 0
-    # test end index
-    assert result[-1] == 9
-
-
 def test_clean_card_number_skips_valid_values():
     sample = "4252720361802860591"
     expected = "4252720361802860591"
