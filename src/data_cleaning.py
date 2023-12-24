@@ -68,31 +68,34 @@ class DataCleaning():
         df.set_index("index", inplace=True)
         return df
 
-    def clean_store_data(self, stores_df):
-        stores_df = self.replace_null_with_nan(stores_df)
-        clean_store_type = stores_df["store_type"].apply(
-            self.replace_invalid_store_type_with_nan
+    def clean_store_data(self, stores_df: DataFrame) -> DataFrame:
+        df = stores_df.copy()
+        # drop index column
+        df.drop(columns="index", inplace=True)
+        # mask invalid data by catching invalid store type 
+        column = "store_type"
+        invalid_store_type_mask = df[column].apply(
+            self.is_invalid_data_point
         )
-        stores_df.loc[:, "store_type"] = clean_store_type
-        stores_df = self.drop_rows_where_store_type_is_nan(stores_df)
-        stores_df = stores_df.drop(columns="lat")
-        clean_staff_numbers = stores_df["staff_numbers"].apply(
+        df.mask(invalid_store_type_mask, inplace=True)
+        # drop lat column 
+        df.drop(columns="lat", inplace=True)
+        # clean staff number
+        column = "staff_numbers"
+        df[column] = df[column].apply(
             self.remove_alpha_letters_from_staff_number
         )
-        stores_df.loc[:, "staff_numbers"] = clean_staff_numbers
-        fixed_opening_dates = stores_df["opening_date"].apply(
+        # clean date format
+        column = "opening_date"
+        df[column] = df[column].apply(
             self.fix_date_format
         )
-        stores_df.loc[:, "opening_date"] = fixed_opening_dates
-        fixed_country_code = stores_df["country_code"].str.replace("GB", "UK")
-        stores_df.loc[:, "country_code"] = fixed_country_code
-        invalid = "ee"
-        valid = ""
-        fixed_continent = stores_df["continent"].str.replace(invalid, valid)
-        stores_df.loc[:, "continent"] = fixed_continent
-        stores_df["index"] = self.generate_index_list(stores_df)
-        stores_df.set_index("index", inplace=True)
-        return stores_df
+        # clean continent
+        column = "continent"
+        df[column] = df[column].str.replace("ee", "")
+        # drop rows where all values are nans
+        df.dropna(how="all", inplace=True)
+        return df
 
     def clean_products_data(self, products_df: pd.DataFrame) -> pd.DataFrame:
         df = products_df.copy()
@@ -148,7 +151,7 @@ class DataCleaning():
 
     def assign_valid_country_code(self, country):
         country_code_map = {
-            "United Kingdom": "UK",
+            "United Kingdom": "GB",
             "United States": "US",
             "Germany": "DE"
         }
@@ -174,15 +177,6 @@ class DataCleaning():
         mask = stores_df["store_type"].isna()
         return stores_df[~mask]
 
-    def replace_invalid_store_type_with_nan(self, store_type):
-        if store_type is np.nan:
-            return store_type
-        store_type_string = str(store_type)
-        contain_digit = any([char.isdigit() for char in store_type_string])
-        if contain_digit:
-            return np.nan
-        return store_type_string
-
     def remove_alpha_letters_from_staff_number(self, staff_number):
         if staff_number is np.nan:
             return np.nan
@@ -193,8 +187,8 @@ class DataCleaning():
             for char in staff_number_string:
                 if char.isalpha():
                     fixed_staff_numbers = fixed_staff_numbers.replace(char, "")
-            return int(fixed_staff_numbers)
-        return staff_number
+            return fixed_staff_numbers
+        return staff_number_string
 
     def convert_product_weights(self, products_df: DataFrame) -> DataFrame:
         df = products_df.copy()
