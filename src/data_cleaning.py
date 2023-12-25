@@ -76,7 +76,7 @@ class DataCleaning():
         df[column] = df[column].str.replace("@@", "@")
 
         column = "country_code"
-        df[column] = df[column].apply(self.assign_valid_country_code)
+        df[column] = df["country"].apply(self.assign_valid_country_code)
 
         column = "phone_number"
         df[column] = df[column].str.replace("x", "")

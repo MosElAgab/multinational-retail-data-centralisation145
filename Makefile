@@ -39,6 +39,14 @@ install-pytest:
 
 
 # Common Commands
+## print requirements
+print-req:
+	$(call execute_in_env, pip freeze > requirements.txt)
+
+##install requirements 
+install-req:
+	$(call execute_in_env, pip install -r requirements.txt)
+
 ## Run a single test
 unit-test:
 	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest -v ${test_run})
@@ -58,3 +66,18 @@ setup-db:
 	$(call execute_in_env, psql -f ./db/db-setup.sql)
 ## Run all checks
 run-checks: test-all run-flake
+
+## run etl
+run-etl:
+	$(call execute_in_env, python ./src/main.py)
+
+## build scehma
+build-db-schema:
+	$(call execute_in_env, psql -f ./db/create_db_schema.sql)
+
+## query the data
+query-the-data:
+	$(call execute_in_env, psql -f ./db/query_the_data.sql)
+
+## run the whole code
+run-code: setup-db run-etl build-db-schema query-the-data
