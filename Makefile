@@ -71,7 +71,7 @@ run-checks: test-all run-flake
 run-etl:
 	$(call execute_in_env, python ./src/main.py)
 
-## build scehma
+## build schema
 build-db-schema:
 	$(call execute_in_env, psql -f ./db/create_db_schema.sql)
 
