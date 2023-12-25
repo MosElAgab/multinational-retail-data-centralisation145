@@ -147,7 +147,7 @@ class DataCleaning():
         column = "store_type"
         invalid_store_type_mask = df[column].apply(self.is_invalid_data_point)
         df.mask(invalid_store_type_mask, inplace=True)
-    
+
         df.drop(columns="lat", inplace=True)
 
         column = "staff_numbers"
@@ -378,7 +378,7 @@ class DataCleaning():
         df["weight"].mask(~mask, inplace=True)
         return df
 
-    def convert_to_kg(self, value:str) -> str:
+    def convert_to_kg(self, value: str) -> str:
         """
         Convert a product weight value to kilograms.
 

@@ -4,6 +4,7 @@ from src.data_cleaning import DataCleaning
 
 cleaning_util = DataCleaning()
 
+
 def test_it_returns_pd_dataframe():
     sample_data = {"weight": [i for i in range(10)]}
     sample_df = pd.DataFrame(sample_data)

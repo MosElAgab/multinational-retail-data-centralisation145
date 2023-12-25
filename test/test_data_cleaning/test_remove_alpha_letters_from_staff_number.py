@@ -3,6 +3,7 @@ from src.data_cleaning import DataCleaning
 
 cleaning_util = DataCleaning()
 
+
 def test_remove_alpha_letters_from_staff_number_skips_nans():
     sample = np.nan
     expected = np.nan

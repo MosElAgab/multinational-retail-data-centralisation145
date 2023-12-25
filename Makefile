@@ -51,9 +51,8 @@ test-all:
 run-flake:
 	$(call execute_in_env, flake8 \
 	./src/*.py \
-	./test/test_database_utils/*.py \
 	./test/test_data_extraction/*.py \
-	./test/test_data_cleaning )
+	./test/test_data_cleaning/*.py )
 ## set-up database
 setup-db:
 	$(call execute_in_env, psql -f ./db/db-setup.sql)

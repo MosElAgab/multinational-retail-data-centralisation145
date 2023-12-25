@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, URL, engine
+from sqlalchemy import create_engine, URL
 from pandas import DataFrame
 from decouple import config
 import yaml
@@ -14,8 +14,10 @@ class DatabaseConnector():
 
     Methods:
         init_db_engine(): Initialize a SQLAlchemy database engine for RDS based on provided credentials.
-        init_upload_db_engine(): Initialize a SQLAlchemy database engine for local database based on provided credentials.
-        upload_to_db(df: DataFrame, table_name: str, engine): Upload a DataFrame to the specified database table.
+        init_upload_db_engine(): Initialize a SQLAlchemy database engine for local database based on
+        provided credentials.
+        upload_to_db(df: DataFrame, table_name: str, engine): Upload a DataFrame to the
+        specified database table.
     """
     def __init__(self):
         self.creds_url = config("RDS-CREDS-FILE-PATH")
@@ -73,7 +75,6 @@ class DatabaseConnector():
         )
         engine = create_engine(url_object)
         return engine
-
 
     def init_upload_db_engine(self):
         """
