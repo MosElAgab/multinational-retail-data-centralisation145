@@ -123,7 +123,7 @@ class DataCleaning():
     def clean_store_data(self, stores_df: DataFrame) -> DataFrame:
         """
         Clean store data in the DataFrame.
-        
+
         Parameters:
         - stores_df (DataFrame): Input DataFrame containing store data.
 
