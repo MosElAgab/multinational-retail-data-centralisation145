@@ -51,11 +51,11 @@ The project requires 3 configuration files as follow:
 This file should contain aicore AWS RDS credentials as follow:
 
 ```yaml
-    RDS_HOST: "<aicore-amazon-rds-endpoint>"
-    RDS_PASSWORD:  "<aicore-amazon-rds-password>"
-    RDS_USER: "<aicore-amazon-rds-user>"
-    RDS_DATABASE: "<aicore-amazon-rds-database>"
-    RDS_PORT: "<aicore-amazon-rds-port>"
+RDS_HOST: "<aicore-amazon-rds-endpoint>"
+RDS_PASSWORD:  "<aicore-amazon-rds-password>"
+RDS_USER: "<aicore-amazon-rds-user>"
+RDS_DATABASE: "<aicore-amazon-rds-database>"
+RDS_PORT: "<aicore-amazon-rds-port>"
 ```
 
 #### local_db_creds.yaml
@@ -63,16 +63,16 @@ This file should contain aicore AWS RDS credentials as follow:
 This file should contain database credentials for the database that is used to load the data, the file should look as follow:
 
 ```yaml
-    HOST: "<host>"
-    PASSWORD: "<password>"
-    USER: "<user>"
-    DATABASE: "sales_data"
-    PORT: "<port>"
+HOST: "<host>"
+PASSWORD: "<password>"
+USER: "<user>"
+DATABASE: "sales_data"
+PORT: "<port>"
 ```
 
 #### .env
 ```dotenv
-    X-API-KEY="<x-api-key for stores data api header>"
+X-API-KEY="<x-api-key for stores data api header>"
 ```
 
 ### Virtual Environment
@@ -81,22 +81,22 @@ The project requires a virtual environment setup with all dependicies.
 
 To create virtual environment (**venv**), from CLI run:
 ```bash
-    make create-venv
+make create-venv
 ```
 
 Alternatively, run:
 ```bash
-    python -m venv venv
+python -m venv venv
 ```
 
 To install project dependicies, from CLI run:
 ```bash
-    make install-req
+make install-req
 ```
 
 Alternatively, from within **venv** run:
 ```bash
-    pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Database
@@ -105,81 +105,81 @@ The project requires **sales_data** database to load cleaned data.
 
 To set-up data, from CLI run:
 ```bash
-    make setup-db
+make setup-db
 ```
 
 Alternatively, run:
-```
-    psql -f ./db/db-setup.sql
+```bash
+psql -f ./db/db-setup.sql
 ```
 
 ## Usage Instruction
 Note: The make commands defined below are specifically crafted to execute automatically within the virtual environment. Consequently, there is no necessity to manually activate the virtual environment each time. To manually activate virtual environment, simply type:
 ```bash
-    source venv/bin/activate
+source venv/bin/activate
 ```
 
 ### ETL process
 
 To run data extract, clean and load process (ETL), from CLI run:
 ```bash
-    make run-etl
+make run-etl
 ```
 
-Alternatively, run main.py script as follow:
-```
-    python ./src/main.py
+Alternatively, from within **venv** run main.py script as follow:
+```bash
+python ./src/main.py
 ```
 
 ### Building a star schema
 
 To build star schema, from CLI run:
 ```bash
-    make build-db-schema
+make build-db-schema
 ```
 
 Alternatively, run create_db_schem.sql script as follow:
 ```
-    psql -f db/create_db_schema.sql
+psql -f db/create_db_schema.sql
 ```
 
 ### Query the data
 
 To retrieve business related info, from CLI run:
 ```bash
-    make query-the-data
+make query-the-data
 ```
 
 Alternatively, run query_the_data.sql script as follow:
 ```
-    psql -f ./db/query_the_data.sql
+psql -f ./db/query_the_data.sql
 ```
 
 ### Run the code
 
 To run the whole process at once, from CLI run:
 ```bash
-    make run-code
+make run-code
 ```
 
 Alternatively, from within **venv** run:
 ```bash
-    psql -f ./db/db-setup.sql && python ./src/main.py \
-    psql -f db/create_db_schema.sql && psql -f ./db/query_the_data.sql
+psql -f ./db/db-setup.sql && python ./src/main.py \
+psql -f db/create_db_schema.sql && psql -f ./db/query_the_data.sql
 ```
 
 ### Testing
 To run all pytest tests built during development process and flake8 linter checks, from CLI run:
 ```
-    make run-checks
+make run-checks
 ```
 
 Alternatively, from within virtual environment run:
 ```bash
-    PYTHONPATH=$(pwd) pytest -v && \
-    flake8 ./src/*.py \
-	./test/test_data_extraction/*.py \
-	./test/test_data_cleaning/*.py
+PYTHONPATH=$(pwd) pytest -v && \
+flake8 ./src/*.py \
+./test/test_data_extraction/*.py \
+./test/test_data_cleaning/*.py
 ```
 
 ## File Structure
