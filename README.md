@@ -53,9 +53,9 @@ This file should contain aicore AWS RDS credentials as follow:
 ```yaml
     RDS_HOST: "<aicore-amazon-rds-endpoint>"
     RDS_PASSWORD:  "<aicore-amazon-rds-password>"
-    RDS_USER: "postgres"
-    RDS_DATABASE: "postgres"
-    RDS_PORT: "5432"
+    RDS_USER: "<aicore-amazon-rds-user>"
+    RDS_DATABASE: "<aicore-amazon-rds-database>"
+    RDS_PORT: "<aicore-amazon-rds-port>"
 ```
 
 #### local_db_creds.yaml
