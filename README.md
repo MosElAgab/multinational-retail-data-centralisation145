@@ -48,7 +48,7 @@ The project requires 3 configuration files as follow:
 
 #### db_creds.yaml
 
-This file should contain aicore aws credentials as follow:
+This file should contain aicore AWS RDS credentials as follow:
 
 ```yaml
     RDS_HOST: "<aicore-amazon-rds-endpoint>"
@@ -60,7 +60,7 @@ This file should contain aicore aws credentials as follow:
 
 #### local_db_creds.yaml
 
-This file should contain the upload database credentials as follow:
+This file should contain database credentials for the database that is used to load the data, the file should look as follow:
 
 ```yaml
     HOST: "<host>"
@@ -79,36 +79,36 @@ This file should contain the upload database credentials as follow:
 
 The project requires a virtual environment setup with all dependicies.  
 
-To create virtul environment, from CLI type:
+To create virtual environment (**venv**), from CLI run:
 ```bash
     make create-venv
 ```
 
-Alternatively, type:
+Alternatively, run:
 ```bash
     python -m venv venv
 ```
 
-To install project dependicies, from CLI type:
+To install project dependicies, from CLI run:
 ```bash
     make install-req
 ```
 
-Alternatively, from within **venv** type:
+Alternatively, from within **venv** run:
 ```bash
     pip install -r requirements.txt
 ```
 
 ### Database
 
-The project require **sales_data** database to load cleaned data.
+The project requires **sales_data** database to load cleaned data.
 
-To set-up data, from CLI type:
+To set-up data, from CLI run:
 ```bash
     make setup-db
 ```
 
-Alternatively, type:
+Alternatively, run:
 ```
     psql -f ./db/db-setup.sql
 ```
@@ -121,7 +121,7 @@ Note: The make commands defined below are specifically crafted to execute automa
 
 ### ETL process
 
-To run data extract, clean and load process (ETL), from CLI type:
+To run data extract, clean and load process (ETL), from CLI run:
 ```bash
     make run-etl
 ```
@@ -133,7 +133,7 @@ Alternatively, run main.py script as follow:
 
 ### Building a star schema
 
-To build star schema, from CLI type:
+To build star schema, from CLI run:
 ```bash
     make build-db-schema
 ```
@@ -145,7 +145,7 @@ Alternatively, run create_db_schem.sql script as follow:
 
 ### Query the data
 
-To retrieve business related info:
+To retrieve business related info, from CLI run:
 ```bash
     make query-the-data
 ```
@@ -157,12 +157,12 @@ Alternatively, run query_the_data.sql script as follow:
 
 ### Run the code
 
-To run the whole process at once, from CLI type
+To run the whole process at once, from CLI run:
 ```bash
     make run-code
 ```
 
-Alternatively, from within virtual environment type:
+Alternatively, from within **venv** run:
 ```bash
     psql -f ./db/db-setup.sql && python ./src/main.py \
     psql -f db/create_db_schema.sql && psql -f ./db/query_the_data.sql
