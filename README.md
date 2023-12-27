@@ -7,7 +7,7 @@
     - [Dependencies](#dependencies)
 1. [Installation Instruction](#installation-instruction)
     - [Configuration files](#configuration-files)
-    - [Virtual Environment](#virtual-environment)
+    - [Virtual Environment](#virtual-environment-venv)
     - [Database](#database)
 1. [Usage Instruction](#usage-instruction)
     - [ETL process](#etl-process)
@@ -75,7 +75,7 @@ PORT: "<port>"
 X-API-KEY="<x-api-key for stores data api header>"
 ```
 
-### Virtual Environment
+### Virtual Environment (venv)
 
 The project requires a virtual environment setup with all dependicies.  
 
