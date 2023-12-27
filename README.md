@@ -1,8 +1,26 @@
 # Multinational-retail-data-centralisation
 
 ## Table of Content
+1. [Project Description](#project-description)
+    - [Overview](#overview)
+    - [Prerequisites](#prerequisites)
+    - [Dependencies](#dependencies)
+1. [Installation Instruction](#installation-instruction)
+    - [Configuration files](#configuration-files)
+    - [Virtual Environment](#virtual-environment)
+    - [Database](#database)
+1. [Usage Instruction](#usage-instruction)
+    - [ETL process](#etl-process)
+    - [Building a star schema](#building-a-star-schema)
+    - [Query the data](#query-the-data)
+    - [Run the code](#run-the-code)
+    - [Testing](#testing)
+1. [File Structure](#file-structure)
+1. [License](#license)
 
-## Description
+## Project Description
+
+### Overview
 The Multinational Retail Data Centralisation project focuses on data engineering tasks, including the extraction, cleaning, and loading of data from diverse sources within a multinational retail organization. The primary goal is to create a star-based schema and address business-related inquiries through SQL queries. The project encompasses the extraction of data from various sources such as AWS RDS, web APIs, PDF files, S3 buckets, and JSON files. The data cleaning stage utilizes the Pandas Python package following best practices. All data cleaning functionality is abstracted in a DataCleaning class. Methods that involve single responsiblity in the DataCleaning class through test-driven-devolpment TDD using pytest package. The project utilises makfile to automate processes involved, include ETL process, building the db schema and quering the data. The code is written in compliance with the PEP 8 style guide using flake8 linter.
 
 ### Prerequisites
@@ -101,7 +119,7 @@ Note: The make commands defined below are specifically crafted to execute automa
     source venv/bin/activate
 ```
 
-### ETL process:
+### ETL process
 
 To run data extract, clean and load process (ETL), from CLI type:
 ```bash
@@ -113,7 +131,7 @@ Alternatively, run main.py script as follow:
     python ./src/main.py
 ```
 
-### Building a star schema:
+### Building a star schema
 
 To build star schema, from CLI type:
 ```bash
@@ -125,7 +143,7 @@ Alternatively, run create_db_schem.sql script as follow:
     psql -f db/create_db_schema.sql
 ```
 
-### Query the data:
+### Query the data
 
 To retrieve business related info:
 ```bash
@@ -137,7 +155,7 @@ Alternatively, run query_the_data.sql script as follow:
     psql -f ./db/query_the_data.sql
 ```
 
-### Run the code:
+### Run the code
 
 To run the whole process at once, from CLI type
 ```bash
@@ -150,13 +168,13 @@ Alternatively, from within virtual environment type:
     psql -f db/create_db_schema.sql && psql -f ./db/query_the_data.sql
 ```
 
-### Run pytest and flake8 linter
-To run tests built during development process, from CLI type:
+### Testing
+To run all pytest tests built during development process and flake8 linter checks, from CLI run:
 ```
     make run-checks
 ```
 
-Alternatively, from within virtual environment type:
+Alternatively, from within virtual environment run:
 ```bash
     PYTHONPATH=$(pwd) pytest -v && \
     flake8 ./src/*.py \
