@@ -32,6 +32,7 @@ connection.upload_to_db(clean_users_df, table_name, upload_engine)
 # info
 print("...info")
 clean_users_df.info()
+del clean_users_df
 
 
 # *** cards data
@@ -55,7 +56,7 @@ connection.upload_to_db(clean_card_df, table_name, upload_engine)
 # info
 print("...info")
 clean_card_df.info()
-
+del clean_card_df
 
 # *** stores data
 print("*** processing stores_data")
@@ -81,7 +82,7 @@ connection.upload_to_db(clean_stores_df, table_name, upload_engine)
 # info
 print("...info")
 clean_stores_df.info()
-
+del clean_stores_df
 
 # *** products data
 print("*** processing cards_data")
@@ -104,6 +105,7 @@ connection.upload_to_db(clean_products_df, table_name, upload_engine)
 # info
 print("...info")
 clean_products_df.info()
+del clean_products_df
 
 
 # *** orders data
@@ -128,6 +130,7 @@ connection.upload_to_db(clean_orders_df, table_name, upload_engine)
 # info
 print("...info")
 clean_orders_df.info()
+del clean_orders_df
 
 
 # *** date date events
@@ -135,7 +138,7 @@ print("*** processing orders_data")
 
 # extract date events
 print("...extracting")
-file_address = config("DATE-EVENTS-DATA-LINK")
+file_address = extractor.DATE_EVENTS_DATA_LINK
 date_events_df = extractor.extract_date_events_data(file_address)
 
 # clean date events
@@ -151,6 +154,7 @@ connection.upload_to_db(clean_date_events_df, table_name, upload_engine)
 # info
 print("...info")
 clean_date_events_df.info()
+del clean_date_events_df
 
 
 # end

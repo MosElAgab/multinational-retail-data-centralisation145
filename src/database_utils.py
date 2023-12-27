@@ -20,8 +20,8 @@ class DatabaseConnector():
         specified database table.
     """
     def __init__(self):
-        self.creds_url = config("RDS-CREDS-FILE-PATH")
-        self.upload_creds_url = config("LOCAL-DB-CREDS-FILE-PATH")
+        self.creds_url = "./db_creds.yaml"
+        self.upload_creds_url =  "./local_db_creds.yaml"
 
     def __read_db_creds(self):
         """

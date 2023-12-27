@@ -10,11 +10,13 @@ import botocore
 
 
 class DataExtractor():
-    NUMBER_OF_STORES_URL = config("NUMBER_OF_STORES_URL")
     HEADERS = {"x-api-key": config("X-API-KEY")}
-    STORE_DATA_URL = config("STORE_DATA_URL")
-    S3_ADDRESS = config("S3_ADDRESS")
-    PDF_URL = config("PDF-URL")
+    NUMBER_OF_STORES_URL = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores"
+    STORE_DATA_URL = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/%i"
+    S3_ADDRESS = "s3://data-handling-public/products.csv"
+    PDF_URL = "https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf"
+    DATE_EVENTS_DATA_LINK="https://data-handling-public.s3.eu-west-1.amazonaws.com/date_details.json"
+
 
     def __init__(self) -> None:
         pass
@@ -112,7 +114,7 @@ class DataExtractor():
         bucket_name = s3_address_data["BUCKET_NAME"]
         key = s3_address_data["KEY"]
         s3 = boto3.resource('s3')
-        download_path = "./data/products.csv"
+        download_path = "./products.csv"
         try:
             s3.Bucket(bucket_name).download_file(key, download_path)
         except botocore.exceptions.ClientError as e:
