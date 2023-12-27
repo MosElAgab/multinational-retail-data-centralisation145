@@ -44,7 +44,7 @@ For full details, see [***requirements.txt***](requirements.txt)
 
 ### Configuration files
 
-The project requires 3 configuration files as follow:
+The project requires 3 configuration files to be placed in the root directory of this project. The required configuration files are as follow:
 
 #### db_creds.yaml
 
